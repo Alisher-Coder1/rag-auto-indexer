@@ -8,7 +8,8 @@ from langchain_community.document_loaders import TextLoader
 
 KNOWLEDGE_BASE_PATH = "knowledge_base.txt"
 INDEX_DIR = "faiss_index"
-HASH_STORE_PATH = "kb_hash.json"
+os.makedirs("kb", exist_ok=True)
+HASH_STORE_PATH = os.path.join("kb", "kb_hash.json")
 INDEX_FILE_NAME = "index.faiss"
 DOCSTORE_FILE_NAME = "index.pkl"
 
