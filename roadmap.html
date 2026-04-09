@@ -1,0 +1,677 @@
+Вот готовая HTML-версия дорожной карты реализации. Вы можете сохранить её в файл
+с расширением `.html` и открыть в любом браузере. ```html
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>Дорожная карта: авто-перестроение FAISS-индекса (MVP)</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          sans-serif;
+        background: #f1f5f9;
+        color: #0f172a;
+        line-height: 1.5;
+        padding: 2rem 1rem;
+      }
+
+      .container {
+        max-width: 1300px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 2rem;
+        box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 2rem 2rem 2.5rem 2rem;
+      }
+
+      h1 {
+        font-size: 1.9rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+      }
+
+      .subhead {
+        color: #334155;
+        border-left: 4px solid #3b82f6;
+        padding-left: 1rem;
+        margin: 0.5rem 0 1.5rem 0;
+        font-weight: 400;
+      }
+
+      .badge {
+        display: inline-block;
+        background: #e2e8f0;
+        padding: 0.2rem 0.8rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #1e293b;
+      }
+
+      .duration {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      /* Легенда */
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        border-radius: 1.5rem;
+        margin: 1.5rem 0 2rem 0;
+        border: 1px solid #e2e8f0;
+      }
+
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      /* Этапы */
+      .stage {
+        margin-bottom: 2.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1.5rem;
+        background: #ffffff;
+        transition: box-shadow 0.2s;
+      }
+
+      .stage:hover {
+        box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.1);
+      }
+
+      .stage-header {
+        background: #f9fafb;
+        padding: 1rem 1.5rem;
+        border-bottom: 2px solid #e2e8f0;
+        border-radius: 1.5rem 1.5rem 0 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.5rem;
+      }
+
+      .stage-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .stage-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #475569;
+      }
+
+      .stage-goal {
+        background: #f1f5f9;
+        padding: 0.6rem 1.5rem;
+        font-style: italic;
+        border-bottom: 1px solid #e2e8f0;
+        color: #2c3e66;
+      }
+
+      .tasks-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+
+      .tasks-table th,
+      .tasks-table td {
+        padding: 0.9rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #eef2f6;
+        vertical-align: top;
+      }
+
+      .tasks-table th {
+        background: #fefce8;
+        font-weight: 600;
+        color: #334155;
+        width: 25%;
+      }
+
+      .milestone {
+        background: #ecfdf5;
+        border-left: 4px solid #10b981;
+        padding: 0.7rem 1.2rem;
+        margin: 1rem 1.5rem 1.2rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 500;
+      }
+
+      .test-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 0.8rem;
+        margin: 1rem 0;
+      }
+
+      .test-card {
+        background: #fef9e3;
+        border-radius: 1rem;
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+        border-left: 3px solid #eab308;
+      }
+
+      .risk-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff7ed;
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+
+      .risk-table th,
+      .risk-table td {
+        padding: 0.8rem;
+        border-bottom: 1px solid #ffedd5;
+        text-align: left;
+      }
+
+      .gantt-block {
+        background: #f1f5f9;
+        padding: 1rem;
+        border-radius: 1rem;
+        font-family: "Courier New", monospace;
+        font-size: 0.8rem;
+        white-space: pre;
+        overflow-x: auto;
+      }
+
+      footer {
+        margin-top: 2.5rem;
+        text-align: center;
+        color: #64748b;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1.5rem;
+        font-size: 0.8rem;
+      }
+
+      @media (max-width: 700px) {
+        .container {
+          padding: 1rem;
+        }
+        .tasks-table th,
+        .tasks-table td {
+          display: block;
+          width: 100%;
+          padding: 0.5rem 0.8rem;
+        }
+        .tasks-table tr {
+          display: block;
+          margin-bottom: 1rem;
+          border: 1px solid #e2e8f0;
+          border-radius: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>📌 Дорожная карта реализации</h1>
+      <div class="subhead">
+        Автоматическое перестроение FAISS-индекса при изменении
+        knowledge_base.txt (MVP)
+      </div>
+      <div>
+        <span class="badge">Основание: финальное ТЗ (разделы 5–7)</span>
+        <span class="badge duration">⏱ 8–12 часов (1–2 дня)</span>
+      </div>
+
+      <!-- Легенда -->
+      <div class="legend">
+        <span>✅ Завершённый этап / веха</span>
+        <span>🔄 В работе</span>
+        <span>⏳ Запланировано</span>
+        <span>⚠️ Риск / точка внимания</span>
+      </div>
+
+      <!-- Этап 1 -->
+      <div class="stage">
+        <div class="stage-header">
+          <div class="stage-title">
+            <span>🔍</span> Этап 1 – Подготовка и анализ
+          </div>
+          <div class="stage-meta">
+            <span>⏱ 1–2 часа</span> <span>🎯 Устранить неопределённости</span>
+          </div>
+        </div>
+        <div class="stage-goal">
+          Цель: определить реальные пути, имена файлов индекса и сигнатуры
+          существующих функций.
+        </div>
+        <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Задача</th>
+              <th>Детали</th>
+              <th>Время</th>
+              <th>Критерий готовности</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.1 Найти и зафиксировать пути</td>
+              <td>Определить директорию индекса, имена файлов</td>
+              <td>20 мин</td>
+              <td>Константы INDEX_DIR, KNOWLEDGE_BASE_PATH, HASH_STORE_PATH</td>
+            </tr>
+            <tr>
+              <td>1.2 Определить точные файлы индекса</td>
+              <td>Выяснить, какие файлы создаёт build_and_save_faiss_index</td>
+              <td>20 мин</td>
+              <td>
+                Список из двух имён (например, index.faiss + docstore.json)
+              </td>
+            </tr>
+            <tr>
+              <td>1.3 Проверить load_faiss_index</td>
+              <td>
+                Убедиться, что функция загрузки существует, иначе выделить из
+                get_db_index
+              </td>
+              <td>20 мин</td>
+              <td>Функция load_faiss_index(index_dir) существует</td>
+            </tr>
+            <tr>
+              <td>1.4 Проверить создание директории</td>
+              <td>Добавить os.makedirs, если необходимо</td>
+              <td>20 мин</td>
+              <td>При сборке индекса директория создаётся автоматически</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="milestone">
+          ✅ Веха 1: Готовность к реализации – известны все пути, имена,
+          сигнатуры.
+        </div>
+      </div>
+
+      <!-- Этап 2 -->
+      <div class="stage">
+        <div class="stage-header">
+          <div class="stage-title">
+            <span>🔐</span> Этап 2 – Hash-механизм и вспомогательные функции
+          </div>
+          <div class="stage-meta">
+            <span>⏱ 2–3 часа</span>
+            <span>🎯 Безопасные утилиты хеширования/JSON</span>
+          </div>
+        </div>
+        <div class="stage-goal">
+          Создать масштабируемые, отказоустойчивые функции: чтение чанками,
+          атомарная запись, очистка индекса.
+        </div>
+        <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Функция</th>
+              <th>Особенности</th>
+              <th>Время</th>
+              <th>Критерий</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>compute_file_hash</td>
+              <td>SHA256, чанки 8192 байт</td>
+              <td>20 мин</td>
+              <td>Работает с файлами любого размера</td>
+            </tr>
+            <tr>
+              <td>load_kb_hash</td>
+              <td>Чтение JSON, обработка JSONDecodeError + вывод [WARN]</td>
+              <td>20 мин</td>
+              <td>Битый JSON → None + предупреждение</td>
+            </tr>
+            <tr>
+              <td>save_kb_hash</td>
+              <td>Атомарная запись через .tmp + os.replace</td>
+              <td>20 мин</td>
+              <td>При сбое не остаётся битого файла</td>
+            </tr>
+            <tr>
+              <td>faiss_index_exists</td>
+              <td>Проверка существования всех файлов индекса</td>
+              <td>10 мин</td>
+              <td>True только при наличии обоих файлов</td>
+            </tr>
+            <tr>
+              <td>_clean_index_dir</td>
+              <td>
+                Удаление всех файлов в INDEX_DIR, создание пустой директории
+              </td>
+              <td>20 мин</td>
+              <td>Директория пуста и существует</td>
+            </tr>
+            <tr>
+              <td>Модульные тесты (опционально)</td>
+              <td>Проверка функций изоляции</td>
+              <td>1 ч</td>
+              <td>Все функции работают корректно</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="milestone">
+          ✅ Веха 2: Хеш-механизм готов – можно интегрировать в get_db_index.
+        </div>
+      </div>
+
+      <!-- Этап 3 -->
+      <div class="stage">
+        <div class="stage-header">
+          <div class="stage-title">
+            <span>⚙️</span> Этап 3 – Модификация get_db_index()
+          </div>
+          <div class="stage-meta">
+            <span>⏱ 3–4 часа</span>
+            <span>🎯 Основная логика + защита загрузки</span>
+          </div>
+        </div>
+        <div class="stage-goal">
+          Реализовать принятие решений, rebuild с очисткой, защиту загрузки
+          индекса (try/except + один повторный rebuild).
+        </div>
+        <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Задача</th>
+              <th>Детали</th>
+              <th>Время</th>
+              <th>Критерий готовности</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>3.1 Проверка KB</td>
+              <td>os.path.exists, иначе FileNotFoundError</td>
+              <td>10 мин</td>
+              <td>Отсутствие файла → исключение</td>
+            </tr>
+            <tr>
+              <td>3.2 Логика need_rebuild</td>
+              <td>Проверка существования индекса, хеша, сравнение</td>
+              <td>30 мин</td>
+              <td>Корректно 3 сценария</td>
+            </tr>
+            <tr>
+              <td>3.3 Информационные сообщения</td>
+              <td>На английском (INFO, WARN, ERROR)</td>
+              <td>15 мин</td>
+              <td>Появляются в нужные моменты</td>
+            </tr>
+            <tr>
+              <td>3.4 Rebuild с очисткой</td>
+              <td>Вызов _clean_index_dir перед build_and_save_faiss_index</td>
+              <td>20 мин</td>
+              <td>Полная перезапись индекса</td>
+            </tr>
+            <tr>
+              <td>3.5 Обработка ошибок rebuild</td>
+              <td>try/except, вывод [ERROR], выброс RuntimeError</td>
+              <td>20 мин</td>
+              <td>При падении хеш не сохраняется</td>
+            </tr>
+            <tr>
+              <td>3.6 Защита загрузки индекса</td>
+              <td>
+                try/except для load_faiss_index, при ошибке → один повторный
+                rebuild
+              </td>
+              <td>1 ч</td>
+              <td>Битый индекс автоматически перестраивается (один раз)</td>
+            </tr>
+            <tr>
+              <td>3.7 Интеграция</td>
+              <td>Собрать полную версию get_db_index</td>
+              <td>30 мин</td>
+              <td>Функция выполняет всю логику</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="milestone">
+          ✅ Веха 3: get_db_index() полностью готова к тестированию.
+        </div>
+      </div>
+
+      <!-- Этап 4 -->
+      <div class="stage">
+        <div class="stage-header">
+          <div class="stage-title">
+            <span>🧪</span> Этап 4 – Ручное тестирование (по ТЗ)
+          </div>
+          <div class="stage-meta">
+            <span>⏱ 2–3 часа</span> <span>🎯 Проверка 10+ сценариев</span>
+          </div>
+        </div>
+        <div class="stage-goal">
+          Убедиться, что система работает корректно во всех граничных случаях.
+        </div>
+        <div class="test-grid">
+          <div class="test-card">
+            <strong>1.</strong> Первый запуск → сборка + JSON
+          </div>
+          <div class="test-card">
+            <strong>2.</strong> Повторный запуск → загрузка, без сборки
+          </div>
+          <div class="test-card">
+            <strong>3.</strong> Изменение KB → перестроение
+          </div>
+          <div class="test-card">
+            <strong>4.</strong> Нет kb_hash.json, индекс есть → rebuild + WARN
+          </div>
+          <div class="test-card">
+            <strong>5.</strong> Битый kb_hash.json → rebuild + WARN
+          </div>
+          <div class="test-card">
+            <strong>6.</strong> Нет индекса, хеш есть → перестроение
+          </div>
+          <div class="test-card">
+            <strong>7.</strong> Повреждён индекс (удалён один файл) →
+            перестроение
+          </div>
+          <div class="test-card">
+            <strong>8.</strong> Ошибка в build_and_save → исключение, старый
+            индекс не меняется
+          </div>
+          <div class="test-card">
+            <strong>9.</strong> Ошибка загрузки индекса → авто rebuild →
+            загрузка
+          </div>
+          <div class="test-card">
+            <strong>10.</strong> Нет knowledge_base.txt → FileNotFoundError
+          </div>
+        </div>
+        <div class="milestone">
+          ✅ Веха 4: Все тест-кейсы пройдены (включая работу с большими
+          файлами).
+        </div>
+      </div>
+
+      <!-- Этап 5 -->
+      <div class="stage">
+        <div class="stage-header">
+          <div class="stage-title">
+            <span>📦</span> Этап 5 – Подготовка к сдаче
+          </div>
+          <div class="stage-meta">
+            <span>⏱ 1 час</span> <span>🎯 Финальный код, документация</span>
+          </div>
+        </div>
+        <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Задача</th>
+              <th>Детали</th>
+              <th>Время</th>
+              <th>Критерий готовности</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>5.1 Добавить docstring</td>
+              <td>Все новые/изменённые функции</td>
+              <td>20 мин</td>
+              <td>Каждая функция описана</td>
+            </tr>
+            <tr>
+              <td>5.2 Удалить отладочный код</td>
+              <td>Закомментированные print, временные логи</td>
+              <td>10 мин</td>
+              <td>Чистый код</td>
+            </tr>
+            <tr>
+              <td>5.3 Проверить константы</td>
+              <td>Относительные пути, вынесены в начало модуля</td>
+              <td>5 мин</td>
+              <td>Нет абсолютных путей</td>
+            </tr>
+            <tr>
+              <td>5.4 Финальный прогон</td>
+              <td>Тест-кейсы 1,2,3 в чистом окружении</td>
+              <td>20 мин</td>
+              <td>Всё работает с нуля</td>
+            </tr>
+            <tr>
+              <td>5.5 README_changes.md (опционально)</td>
+              <td>Краткое описание поведения</td>
+              <td>5 мин</td>
+              <td>Документ для проверяющего</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="milestone">✅ Веха 5: Код готов к сдаче.</div>
+      </div>
+
+      <!-- Текстовая диаграмма Ганта -->
+      <div style="margin: 2rem 0 1rem 0">
+        <h3>📅 Временная диаграмма (текстовый Gantt)</h3>
+        <div class="gantt-block">
+          День 1 (4-6 часов) ├── 09:00 – 11:00 Этап 1 (подготовка) ├── 11:00 –
+          14:00 Этап 2 (hash-функции) └── 14:00 – 17:00 Этап 3 (модификация
+          get_db_index) День 2 (3-5 часов) ├── 09:00 – 11:00 Этап 4
+          (тестирование) └── 11:00 – 12:00 Этап 5 (сдача) Итого: 7–10 часов
+          чистого времени.
+        </div>
+      </div>
+
+      <!-- Риски -->
+      <div style="margin: 2rem 0 1rem 0">
+        <h3>⚠️ Зависимости и риски</h3>
+        <table class="risk-table">
+          <thead>
+            <tr>
+              <th>Риск</th>
+              <th>Вероятность</th>
+              <th>Влияние</th>
+              <th>Митигация</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                Реальные имена файлов индекса отличаются (index.faiss vs
+                faiss_index.bin)
+              </td>
+              <td>Средняя</td>
+              <td>Высокое</td>
+              <td>Этап 1 обязателен – точно определить перед кодированием</td>
+            </tr>
+            <tr>
+              <td>build_and_save_faiss_index не идемпотентна</td>
+              <td>Низкая</td>
+              <td>Среднее</td>
+              <td>
+                Мы сами удаляем директорию перед вызовом (гарантия чистоты)
+              </td>
+            </tr>
+            <tr>
+              <td>
+                load_faiss_index не существует, рефакторинг ломает совместимость
+              </td>
+              <td>Средняя</td>
+              <td>Высокое</td>
+              <td>
+                На этапе 1 проверить; если нет – аккуратно выделить, не меняя
+                сигнатуру get_db_index
+              </td>
+            </tr>
+            <tr>
+              <td>Очень большой knowledge_base.txt (10+ ГБ)</td>
+              <td>Низкая для MVP</td>
+              <td>Среднее</td>
+              <td>
+                Чанковое чтение решает память, сборка индекса синхронна –
+                допустимо
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- После сдачи (уровень B) -->
+      <div
+        style="
+          background: #f0fdf4;
+          border-radius: 1.5rem;
+          padding: 1.2rem 1.5rem;
+          margin-top: 2rem;
+        "
+      >
+        <h3>🚀 После сдачи (Уровень B – по желанию)</h3>
+        <ul
+          style="
+            margin-left: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+          "
+        >
+          <li>➤ Асинхронный rebuild с блокировками</li>
+          <li>➤ Graceful recovery – копия старого индекса</li>
+          <li>➤ Метрики времени сборки и размера индекса</li>
+          <li>➤ Health-check эндпоинт</li>
+        </ul>
+      </div>
+
+      <footer>
+        Документ утверждён. Начинайте реализацию с Этапа 1.<br />
+        Дорожная карта соответствует финальному техническому заданию
+        (MVP-уровень).
+      </footer>
+    </div>
+  </body>
+</html>
+```

@@ -1,0 +1,5 @@
+.venv/
+pycache/
+*.pyc
+faiss_index/
+kb_hash.json
